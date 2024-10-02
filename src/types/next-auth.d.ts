@@ -1,6 +1,6 @@
-import 'next-auth';
+import "next-auth";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
     user: User;
     data: {
@@ -11,10 +11,10 @@ declare module 'next-auth' {
   }
 }
 
-import 'next-auth/jwt';
+import "next-auth/jwt";
 
 // Type backend response
-declare module 'next-auth/jwt' {
+declare module "next-auth/jwt" {
   interface JWT {
     userData: User;
     data: {

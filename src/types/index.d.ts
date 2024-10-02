@@ -3,13 +3,7 @@ export type User = {
   username: string;
   email: string;
   isActive: boolean;
-  roles: Roles[];
-};
-
-export type Roles = {
-  id: number;
-  name: string;
-  description: string;
+  accessToken: string;
 };
 
 declare module "next-auth" {

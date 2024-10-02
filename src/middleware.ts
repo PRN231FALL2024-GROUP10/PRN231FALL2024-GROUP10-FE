@@ -1,6 +1,6 @@
 // export { default } from 'next-auth/middleware';
-import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
 
 export default withAuth(async function middleware(req) {
   const accessToken = await req.nextauth.token?.data.accessToken;
@@ -8,9 +8,9 @@ export default withAuth(async function middleware(req) {
     return NextResponse.next();
   }
 
-  const signInUrl = new URL('/auth/signin', req.nextUrl.origin);
+  const signInUrl = new URL("/auth/signin", req.nextUrl.origin);
   signInUrl.searchParams.append(
-    'callbackUrl',
+    "callbackUrl",
     `${req.nextUrl.pathname}${req.nextUrl.search}`
   );
 
@@ -19,9 +19,6 @@ export default withAuth(async function middleware(req) {
 
 export const config = {
   matcher: [
-    '/all-in-one/:path*',
-    '/profile',
-    '/dashboard',
-    '/dashboard/:path*',
+    "/((?!auth|api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

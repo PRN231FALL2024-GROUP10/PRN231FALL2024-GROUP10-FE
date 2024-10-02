@@ -1,52 +1,60 @@
-import { NextAuthOptions } from 'next-auth';
-import { JWT } from 'next-auth/jwt';
-import CredentialsProvider from 'next-auth/providers/credentials';
+import { NextAuthOptions } from "next-auth";
+import { JWT } from "next-auth/jwt";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
   pages: {
-    signIn: '/auth/signin',
+    signIn: "/auth/signin",
   },
   jwt: {
     secret: process.env.NEXTAUTH_SECRET,
   },
   providers: [
     CredentialsProvider({
-      name: 'credentials',
+      name: "credentials",
       credentials: {
         email: {
-          label: 'User Name',
-          type: 'text',
-          placeholder: 'Your User Name',
+          label: "User Name",
+          type: "text",
+          placeholder: "Your User Name",
         },
         password: {
-          label: 'Password',
-          type: 'password',
+          label: "Password",
+          type: "password",
         },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-        const { email, password } = credentials;
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-          {
-            method: 'POST',
-            body: JSON.stringify({
-              email,
-              password,
-            }),
-            headers: {
-              'Content-Type': 'application/json',
-            },
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            return null;
           }
-        );
-        if (res.status == 401 || res.status == 403) {
+          const { email, password } = credentials;
+          const res = await fetch(
+            `http://localhost:5268/odata/authentications/login`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                email,
+                password,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (!res.ok) {
+            console.error("Error:", res.status, res.statusText);
+            return null;
+          }
+
+          const user = await res.json();
+
+          return user;
+        } catch (error) {
+          console.error("Fetch error:", error);
           return null;
         }
-
-        const user = await res.json();
-        return user;
       },
     }),
   ],
@@ -54,13 +62,21 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        return { ...token, ...user };
+        // return { ...token, ...user };
+        return {
+          userData: user,
+          data: {
+            accessToken: user.accessToken,
+            refreshToken: user.accessToken,
+          },
+        };
       }
 
-      if (new Date().getTime() < token.data.expiresIn) {
-        return token;
-      }
-      return await refreshToken(token);
+      return token;
+      // if (new Date().getTime() < token.data.expiresIn) {
+      //   return token;
+      // }
+      // return await refreshToken(token);
     },
 
     async session({ token, session }) {
@@ -72,7 +88,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
 };
 
@@ -80,7 +96,7 @@ async function refreshToken(token: JWT): Promise<JWT> {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/auth/user/refresh-token`,
     {
-      method: 'POST',
+      method: "POST",
       headers: {
         authorization: `Bearer ${token.data.refreshToken}`,
       },
