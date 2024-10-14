@@ -19,8 +19,10 @@ import {
 
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const JobNetworkSocialPage = () => {
+  const router = useRouter();
   const [jobs, setJobs] = useState([]);
   const [posts, setPosts] = useState([]);
   const [events, setEvents] = useState([]);
@@ -333,12 +335,12 @@ const JobNetworkSocialPage = () => {
           <nav>
             <ul className="flex space-x-6 items-center">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/"
                   className="flex items-center text-gray-600 hover:text-blue-600"
                 >
                   <FaHome className="mr-2" /> Home
-                </a>
+                </Link>
               </li>
               <li>
                 <a
@@ -370,7 +372,7 @@ const JobNetworkSocialPage = () => {
                 {showDropdown && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
                     <Link
-                      href="/auth/profile"
+                      href="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <FaUser className="inline-block mr-2" />
@@ -519,7 +521,10 @@ const JobNetworkSocialPage = () => {
             />
             <h3 className="text-xl font-semibold text-center mb-2">John Doe</h3>
             <p className="text-gray-600 text-center mb-4">Software Developer</p>
-            <button className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
+            <button
+              onClick={() => router.push("/profile")}
+              className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+            >
               Edit Profile
             </button>
           </div>
@@ -599,7 +604,7 @@ const JobNetworkSocialPage = () => {
 
       {showCommentModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">Comments</h3>
               <button
@@ -609,7 +614,7 @@ const JobNetworkSocialPage = () => {
                 <FaTimes />
               </button>
             </div>
-            <div className="max-h-60 overflow-y-auto mb-4">
+            <div className="max-h-96 overflow-y-auto mb-4">
               {renderComments(
                 jobs.find((job) => job.id === selectedJobId)?.comments || []
               )}
