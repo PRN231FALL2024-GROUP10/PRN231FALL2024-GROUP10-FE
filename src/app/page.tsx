@@ -17,309 +17,36 @@ import {
   FaReply,
 } from "react-icons/fa";
 
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import PostForm from "@/components/post/PostForm";
+import PostList from "@/components/post/PostList";
 
 const JobNetworkSocialPage = () => {
   const router = useRouter();
-  const [jobs, setJobs] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [events, setEvents] = useState([]);
   const [notifications, setNotifications] = useState([]);
-  const [comments, setComments] = useState({});
-  const [newComment, setNewComment] = useState("");
-  const [replyingTo, setReplyingTo] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState("All");
-  const [showCommentModal, setShowCommentModal] = useState(false);
-  const [selectedJobId, setSelectedJobId] = useState(null);
+
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleRefresh = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   useEffect(() => {
-    setJobs([
-      {
-        id: 1,
-        title: "Frontend Developer",
-        company: "TechCorp",
-        location: "New York, NY",
-        deadline: "2023-07-30",
-        likes: 5,
-        category: "Tech",
-        comments: [
-          {
-            id: 1,
-            author: "Alice",
-            content: "This looks like a great opportunity!",
-            replies: [
-              {
-                id: 11,
-                author: "Bob",
-                content: "@Alice I agree! The company culture seems amazing.",
-                replies: [
-                  {
-                    id: 111,
-                    author: "Charlie",
-                    content:
-                      "@Bob @Alice I've worked there before, it's fantastic!",
-                  },
-                ],
-              },
-              {
-                id: 12,
-                author: "David",
-                content: "@Alice Have you applied yet?",
-              },
-            ],
-          },
-          {
-            id: 2,
-            author: "Eve",
-            content: "I've heard good things about TechCorp.",
-            replies: [],
-          },
-          {
-            id: 3,
-            author: "Frank",
-            content: "Does anyone know if they offer remote work?",
-            replies: [
-              {
-                id: 31,
-                author: "Grace",
-                content: "@Frank Yes, they have a flexible remote work policy.",
-                replies: [
-                  {
-                    id: 311,
-                    author: "Henry",
-                    content:
-                      "@Grace @Frank That's great to know! Thanks for sharing.",
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 2,
-        title: "UX Designer",
-        company: "DesignHub",
-        location: "San Francisco, CA",
-        deadline: "2023-08-15",
-        likes: 3,
-        category: "Design",
-        comments: [],
-      },
-      {
-        id: 3,
-        title: "Data Analyst",
-        company: "DataTech",
-        location: "Chicago, IL",
-        deadline: "2023-08-05",
-        likes: 7,
-        category: "Data",
-        comments: [],
-      },
-    ]);
-
-    setPosts([
-      {
-        id: 1,
-        author: "John Doe",
-        content: "Just landed a new job as a Software Engineer!",
-        likes: 15,
-        comments: 3,
-      },
-      {
-        id: 2,
-        author: "Jane Smith",
-        content: "Looking for networking opportunities in the finance sector.",
-        likes: 8,
-        comments: 2,
-      },
-      {
-        id: 3,
-        author: "Mike Johnson",
-        content: "Excited to speak at the upcoming Tech Conference!",
-        likes: 22,
-        comments: 5,
-      },
-    ]);
-
-    setEvents([
-      {
-        id: 1,
-        title: "Tech Networking Mixer",
-        date: "2023-07-25",
-        time: "18:00",
-        location: "TechHub, New York",
-      },
-      {
-        id: 2,
-        title: "Job Fair 2023",
-        date: "2023-08-10",
-        time: "10:00",
-        location: "Convention Center, Chicago",
-      },
-      {
-        id: 3,
-        title: "Career Development Workshop",
-        date: "2023-08-20",
-        time: "14:00",
-        location: "Online",
-      },
-    ]);
-
     setNotifications([
       { id: 1, message: "New job match: Senior Developer at InnoTech" },
       { id: 2, message: "Sarah Lee viewed your profile" },
       { id: 3, message: "Reminder: Tech Networking Mixer today at 6 PM" },
     ]);
-
-    setComments({
-      1: [
-        { id: 1, author: "Alice", content: "Congratulations!" },
-        { id: 2, author: "Bob", content: "That's awesome!" },
-      ],
-      2: [{ id: 1, author: "Charlie", content: "I can help you with that." }],
-      3: [{ id: 1, author: "David", content: "Looking forward to your talk!" }],
-    });
   }, []);
-
-  const handleLikeJob = (jobId) => {
-    setJobs(
-      jobs.map((job) =>
-        job.id === jobId ? { ...job, likes: job.likes + 1 } : job
-      )
-    );
-  };
-
-  const handleShareJob = (jobId) => {
-    alert(`Job with ID ${jobId} has been shared!`);
-  };
-
-  const handleApplyJob = (jobId) => {
-    alert(`You've applied for the job with ID ${jobId}!`);
-  };
-
-  const handleAddComment = (jobId) => {
-    if (newComment.trim()) {
-      setJobs(
-        jobs.map((job) => {
-          if (job.id === jobId) {
-            const updatedComments = [...job.comments];
-            if (replyingTo) {
-              const addReply = (comments, replyTo) => {
-                for (const comment of comments) {
-                  if (comment.id === replyTo.id) {
-                    if (!comment.replies) {
-                      comment.replies = [];
-                    }
-                    comment.replies.push({
-                      id: Date.now(),
-                      author: "You",
-                      content: `@${replyTo.author} ${newComment}`,
-                      replies: [],
-                    });
-                    return true;
-                  }
-                  if (comment.replies && addReply(comment.replies, replyTo)) {
-                    return true;
-                  }
-                }
-                return false;
-              };
-              addReply(updatedComments, replyingTo);
-            } else {
-              updatedComments.push({
-                id: Date.now(),
-                author: "You",
-                content: newComment,
-                replies: [],
-              });
-            }
-            return { ...job, comments: updatedComments };
-          }
-          return job;
-        })
-      );
-      setNewComment("");
-      setReplyingTo(null);
-    }
-  };
-
-  const handleShowCommentModal = (jobId) => {
-    setSelectedJobId(jobId);
-    setShowCommentModal(true);
-  };
-
-  const handleCloseCommentModal = () => {
-    setShowCommentModal(false);
-    setSelectedJobId(null);
-    setReplyingTo(null);
-  };
-
-  const handleReply = (comment) => {
-    setReplyingTo(comment);
-  };
-
-  const handleCancelReply = () => {
-    setReplyingTo(null);
-  };
-
-  const filteredJobs = jobs
-    .filter(
-      (job) =>
-        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter(
-      (job) => filterCategory === "All" || job.category === filterCategory
-    );
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
-  const countTotalComments = (comments) => {
-    let total = comments.length;
-    for (const comment of comments) {
-      if (comment.replies) {
-        total += countTotalComments(comment.replies);
-      }
-    }
-    return total;
-  };
-  const renderComments = (comments, level = 0) => {
-    const isLevelTwoOrHigher = level >= 3;
-    let paddingLeft;
-    if (level === 0) {
-      paddingLeft = "0px";
-    } else {
-      paddingLeft = isLevelTwoOrHigher ? "0px" : `32px`;
-    }
 
-    return comments.map((comment) => (
-      <div
-        key={comment.id}
-        style={{ paddingLeft }} // Áp dụng style
-        className={`bg-gray-${100 + level * 100} rounded mb-2 `}
-      >
-        <p className="font-semibold">{comment.author}</p>
-        <p>{comment.content}</p>
-        <button
-          onClick={() => handleReply(comment)}
-          className="text-blue-500 hover:text-blue-700 text-sm mt-1"
-        >
-          <FaReply className="inline mr-1" /> Reply
-        </button>
-        {comment.replies && comment.replies.length > 0 && (
-          <div className="mt-2">
-            {renderComments(comment.replies, level + 1)}
-          </div>
-        )}
-      </div>
-    ));
-  };
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow-md">
@@ -343,12 +70,12 @@ const JobNetworkSocialPage = () => {
                 </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/job"
                   className="flex items-center text-gray-600 hover:text-blue-600"
                 >
                   <FaBriefcase className="mr-2" /> Jobs
-                </a>
+                </Link>
               </li>
               <li>
                 <a
@@ -395,121 +122,10 @@ const JobNetworkSocialPage = () => {
 
       <main className="container mx-auto px-4 py-8 flex flex-wrap">
         <div className="w-full lg:w-3/4 pr-8">
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Job Listings</h2>
-            <div className="flex justify-between mb-4">
-              <div className="relative flex-grow mr-4">
-                <input
-                  type="text"
-                  placeholder="Search jobs..."
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <FaSearch className="absolute left-3 top-3 text-gray-400" />
-              </div>
-              <select
-                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-              >
-                <option value="All">All Categories</option>
-                <option value="Tech">Tech</option>
-                <option value="Design">Design</option>
-                <option value="Data">Data</option>
-              </select>
-            </div>
-            <div className="space-y-4">
-              {filteredJobs.map((job) => (
-                <div key={job.id} className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-2">{job.title}</h3>
-                  <p className="text-gray-600 mb-2">
-                    {job.company} - {job.location}
-                  </p>
-                  <p className="text-sm text-gray-500 mb-4">
-                    Application Deadline: {job.deadline}
-                  </p>
-                  <div className="flex justify-between items-center mb-4">
-                    <button
-                      onClick={() => handleApplyJob(job.id)}
-                      className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-300"
-                    >
-                      Apply Now
-                    </button>
-                    <div className="flex space-x-4">
-                      <button
-                        onClick={() => handleLikeJob(job.id)}
-                        className="flex items-center text-gray-600 hover:text-blue-600"
-                      >
-                        <FaThumbsUp className="mr-2" /> {job.likes}
-                      </button>
-                      <button
-                        onClick={() => handleShowCommentModal(job.id)}
-                        className="flex items-center text-gray-600 hover:text-blue-600"
-                      >
-                        <FaComment className="mr-2" />{" "}
-                        {countTotalComments(job.comments)}
-                      </button>
-                      <button
-                        onClick={() => handleShareJob(job.id)}
-                        className="flex items-center text-gray-600 hover:text-blue-600"
-                      >
-                        <FaShare className="mr-2" /> Share
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Job Blog Posts</h2>
-            <div className="space-y-4">
-              {posts.map((post) => (
-                <div
-                  key={post.id}
-                  className="bg-white p-6 rounded-lg shadow-md"
-                >
-                  <h3 className="font-semibold mb-2">{post.author}</h3>
-                  <p className="text-gray-700 mb-4">{post.content}</p>
-                  <div className="flex space-x-4 mb-4">
-                    <button className="flex items-center text-gray-600 hover:text-blue-600">
-                      <FaThumbsUp className="mr-2" /> {post.likes}
-                    </button>
-                    <button className="flex items-center text-gray-600 hover:text-blue-600">
-                      <FaComment className="mr-2" /> {post.comments}
-                    </button>
-                    <button className="flex items-center text-gray-600 hover:text-blue-600">
-                      <FaShare className="mr-2" /> Share
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Community Events</h2>
-            <div className="space-y-4">
-              {events.map((event) => (
-                <div
-                  key={event.id}
-                  className="bg-white p-6 rounded-lg shadow-md"
-                >
-                  <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
-                  <p className="text-gray-600 mb-2">
-                    <FaCalendar className="inline mr-2" /> {event.date} at{" "}
-                    {event.time}
-                  </p>
-                  <p className="text-gray-600 mb-4">{event.location}</p>
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
-                    RSVP
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <PostForm onPostCreated={handleRefresh} />
+          </div>
+          <PostList key={refreshTrigger} />
         </div>
 
         <aside className="w-full lg:w-1/4 mt-8 lg:mt-0">
@@ -601,57 +217,6 @@ const JobNetworkSocialPage = () => {
           </div>
         </div>
       </footer>
-
-      {showCommentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Comments</h3>
-              <button
-                onClick={handleCloseCommentModal}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <FaTimes />
-              </button>
-            </div>
-            <div className="max-h-96 overflow-y-auto mb-4">
-              {renderComments(
-                jobs.find((job) => job.id === selectedJobId)?.comments || []
-              )}
-            </div>
-            <div className="flex flex-col">
-              {replyingTo && (
-                <div className="text-sm text-gray-600 mb-2 flex justify-between items-center">
-                  <span>Replying to {replyingTo.author}</span>
-                  <button
-                    onClick={handleCancelReply}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <FaTimes />
-                  </button>
-                </div>
-              )}
-              <input
-                type="text"
-                placeholder={
-                  replyingTo
-                    ? `Reply to ${replyingTo.author}...`
-                    : "Add a comment..."
-                }
-                className="flex-grow mr-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-              />
-              <button
-                onClick={() => handleAddComment(selectedJobId)}
-                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-              >
-                {replyingTo ? "Reply" : "Comment"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
