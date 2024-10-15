@@ -1,3 +1,4 @@
+import { API_LOGIN } from "@/utils/api-links";
 import { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -14,9 +15,9 @@ export const authOptions: NextAuthOptions = {
       name: "credentials",
       credentials: {
         email: {
-          label: "User Name",
+          label: "Username",
           type: "text",
-          placeholder: "Your User Name",
+          placeholder: "Your Username",
         },
         password: {
           label: "Password",
@@ -30,7 +31,7 @@ export const authOptions: NextAuthOptions = {
           }
           const { email, password } = credentials;
           const res = await fetch(
-            `http://localhost:5268/odata/authentications/login`,
+            API_LOGIN,
             {
               method: "POST",
               body: JSON.stringify({
