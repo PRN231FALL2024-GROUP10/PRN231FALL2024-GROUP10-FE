@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-
+import Link from 'next/link';
 import { FormSignInSchema } from "@/libs/schema/auth";
 import { toast } from "react-toastify";
 import SignInWithGoogle from "../SignInWithGoogle";
@@ -56,7 +56,7 @@ const SignInForm = (props: Props) => {
           type="email"
           placeholder="Email Address"
           className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          defaultValue="admin@gmail.com"
+          defaultValue="example@gmail.com"
           {...register("email")}
           required
         />
@@ -67,7 +67,7 @@ const SignInForm = (props: Props) => {
           type="password"
           placeholder="Password"
           className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          defaultValue="123456"
+          defaultValue=""
           {...register("password")}
           required
         />
@@ -78,47 +78,11 @@ const SignInForm = (props: Props) => {
       >
         {isSubmitting ? "Please wait ..." : "Login"}
       </button>
+      <br/>
+      <button className="w-full text-grey px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
+            <Link href={'/auth/signup'}>Create New Account</Link>
+      </button>
     </form>
-    // <form
-    //   className="m-auto max-w-sm shadow-lg"
-    //   onSubmit={handleSubmit(processForm)}
-    // >
-    //   <div className="bg-boxdark p-2 text-center text-2xl font-semibold text-white">
-    //     Job Social
-    //   </div>
-    //   {/* <div className='flex items-start justify-center gap-3 bg-bluewhite p-4 text-white'>
-    //     Sign In
-    //   </div> */}
-    //   <div className="p-8">
-    //     <input
-    //       id="email"
-    //       type="email"
-    //       placeholder="Email"
-    //       className="mb-3 mt-2 w-full rounded border px-3 py-2 leading-tight focus:border-blue focus:outline-none"
-    //       defaultValue="admin@gmail.com"
-    //       {...register("email")}
-    //     />
-    //     <input
-    //       id="password"
-    //       type="password"
-    //       placeholder="**************"
-    //       autoComplete="off"
-    //       className="mb-3 mt-2 w-full rounded border px-3 py-2 leading-tight focus:border-blue focus:outline-none"
-    //       defaultValue="123456"
-    //       {...register("password")}
-    //     />
-    //     <div className="mt-2">
-    //       <button
-    //         className="w-full rounded-sm border border-black-2 bg-boxdark p-2 text-xl text-white"
-    //         type="submit"
-    //       >
-    //         {isSubmitting ? "Please wait ..." : "NEXT"}
-    //       </button>
-    //     </div>
-    //   </div>
-
-    //   <SignInWithGoogle />
-    // </form>
   );
 };
 
