@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import { API_POST_ADD } from "@/utils/api-links";
+import { API_POST_ADD, API_POST_LOAD, API_POST_UPDATE } from "@/utils/api-links";
 
 interface Props {
 
@@ -16,7 +16,7 @@ const PostSchema = z.object({
 
 type PostFormData = z.infer<typeof PostSchema>;
 
-const PostForm = ({ onPostCreated } : Props) => {
+const PostUpdateForm = ({ postId, onPostCreated } : Props) => {
   const { data: session } = useSession();
   const {
     register,
@@ -26,6 +26,27 @@ const PostForm = ({ onPostCreated } : Props) => {
   } = useForm<PostFormData>({
     resolver: zodResolver(PostSchema),
   });
+
+  const [posts, setPosts] = useState();
+  useEffect(() => {
+    fetchPosts();
+  }, [postId]);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch(
+        API_POST_LOAD
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      const post = data.reverse();
+      setPosts(post);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
 
   const processForm: SubmitHandler<PostFormData> = async (data) => {
     const formData = new FormData();
@@ -38,7 +59,7 @@ const PostForm = ({ onPostCreated } : Props) => {
 
     try {
       const response = await fetch(
-        API_POST_ADD,
+        API_POST_UPDATE + `/${postId}/UpdatePost`,
         {
           method: "POST",
           headers: {
@@ -61,13 +82,14 @@ const PostForm = ({ onPostCreated } : Props) => {
       // Handle network errors
     }
   };
+
   return (
     <form onSubmit={handleSubmit(processForm)} className="space-y-4">
       //content
       <div>
         <textarea
           {...register("content")}
-          placeholder="What's on your mind?"
+          placeholder={posts.Content}
           className="w-full p-2 border rounded"
           rows={4}
         />
@@ -76,22 +98,27 @@ const PostForm = ({ onPostCreated } : Props) => {
         )}
       </div>
       
-      //choose job skill
-      <div>
-        //post job skill
-        {errors.content && (
-          <p className="text-red-500">{errors.content.message}</p>
-        )}
-      </div>
-      
-      //choose private level
-      <div>
-        //private level slider
-        {errors.content && (
-          <p className="text-red-500">{errors.content.message}</p>
-        )}
-      </div>
+      if(posts.Category === 2){
+        
+        <div>
+            //choose job title
+            <div>
+                //drop down post job title
+                {errors.content && (
+                <p className="text-red-500">{errors.content.message}</p>
+                )}
+            </div>
 
+            //choose job skill
+            <div>
+                //post job skill
+                {errors.content && (
+                <p className="text-red-500">{errors.content.message}</p>
+                )}
+            </div>
+        </div>
+      }
+      
       <div>
         <input
           type="file"
@@ -111,4 +138,4 @@ const PostForm = ({ onPostCreated } : Props) => {
   );
 };
 
-export default PostForm;
+export default PostUpdateForm;

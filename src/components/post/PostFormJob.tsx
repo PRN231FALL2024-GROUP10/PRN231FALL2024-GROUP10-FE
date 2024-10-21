@@ -16,7 +16,7 @@ const PostSchema = z.object({
 
 type PostFormData = z.infer<typeof PostSchema>;
 
-const PostForm = ({ onPostCreated } : Props) => {
+const PostFormJob = ({ onPostCreated } : Props) => {
   const { data: session } = useSession();
   const {
     register,
@@ -76,6 +76,14 @@ const PostForm = ({ onPostCreated } : Props) => {
         )}
       </div>
       
+      //choose job title
+      <div>
+        //drop down post job title
+        {errors.content && (
+          <p className="text-red-500">{errors.content.message}</p>
+        )}
+      </div>
+
       //choose job skill
       <div>
         //post job skill
@@ -111,4 +119,4 @@ const PostForm = ({ onPostCreated } : Props) => {
   );
 };
 
-export default PostForm;
+export default PostFormJob;

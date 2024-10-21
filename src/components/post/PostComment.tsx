@@ -1,5 +1,7 @@
+import { API_COMMENT_ADD } from "@/utils/api-links";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
+
 
 const PostComment = ({ postId, comments, onCommentAdded }) => {
   const { data: session } = useSession();
@@ -8,7 +10,7 @@ const PostComment = ({ postId, comments, onCommentAdded }) => {
   const handleCommentSubmit = async () => {
     try {
       const response = await fetch(
-        "https://localhost:7207/odata/Comment/AddNewComment",
+        API_COMMENT_ADD,
         {
           method: "POST",
           headers: {
@@ -40,10 +42,21 @@ const PostComment = ({ postId, comments, onCommentAdded }) => {
       <h4 className="font-semibold mb-2">Comments:</h4>
       {comments.map((comment) => (
         <div key={comment.CommentId} className="bg-gray-100 p-2 rounded mb-2">
-          <p>{comment.Content}</p>
-          <p className="text-xs text-gray-500">
-            Commented on: {new Date(comment.CreatedOn).toLocaleString()}
-          </p>
+          <div>
+            <button
+                  className="flex items-center focus:outline-none">
+                  <img
+                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=40&h=40&q=80"
+                    alt="User Avatar"
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <h6>{comment.account.fullName === '' ? 'Commenter' : comment.account.fullName}</h6> 
+            </button>
+          </div>
+        <p>{comment.Content}</p>
+        <p className="text-xs text-gray-500">
+          Commented on: {new Date(comment.CreatedOn).toLocaleString()}
+        </p>
         </div>
       ))}
       <div className="mt-4">

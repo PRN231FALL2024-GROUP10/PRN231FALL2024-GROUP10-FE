@@ -24,7 +24,7 @@ const PostList = ({ key } : Props) => {
       }
       const data = await response.json();
       const reversedPosts = data.reverse();
-      const matchItems = reversedPosts.filter((obj) => obj.Category === "General");
+      const matchItems = reversedPosts.filter((obj) => obj.Category === "Job");
       setPosts(matchItems);
     } catch (error) {
       console.error("Error fetching posts:", error);

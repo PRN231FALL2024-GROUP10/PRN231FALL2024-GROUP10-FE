@@ -9,6 +9,7 @@ export const API_PROFILE = `https://localhost:44324/api/Profile/me`;
 export const API_COMMENT_ADD = `https://localhost:44324/Comment/AddNewComment`; 
 export const API_POST_ADD = `https://localhost:44324/Post/AddNewPost`; 
 export const API_POST_LOAD = `https://localhost:44324/odata/Post/Active?%24expand=Comments`; 
+export const API_POST_UPDATE = `https://localhost:44324/odata/Post/`; // + key/UpdatePost
 
 //data mau
 export const lstPost = [];
