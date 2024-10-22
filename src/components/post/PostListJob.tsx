@@ -7,7 +7,7 @@ interface Props {
   key?: string;
 }
 
-const PostList = ({ key } : Props) => {
+const PostListJob = ({ key } : Props) => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -59,4 +59,4 @@ const PostList = ({ key } : Props) => {
   );
 };
 
-export default PostList;
+export default PostListJob;
