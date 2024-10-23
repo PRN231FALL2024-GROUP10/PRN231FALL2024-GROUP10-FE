@@ -35,7 +35,8 @@ const SignUpForm = (props: Props) => {
               body: JSON.stringify({
                 email: data.email,
                 password: data.password,
-                fullName: data.email
+                fullName: data.username,
+                fullNameSearch: data.username
               }),
               headers: {
                 "Content-Type": "application/json",
@@ -62,25 +63,35 @@ const SignUpForm = (props: Props) => {
       return;
     }
 
-    console.log(props.callbackUrl);
-    toast.success("Welcome to JobNetwork");
+    toast.success("Welcome to WSocial");
     router.push(props.callbackUrl ? props.callbackUrl : "/");
   };
   
   return (
-    <form onSubmit={handleSubmit(processForm)}>
-      <label>Email</label>
+    <form onSubmit={handleSubmit(processForm)} className="space-y-4">
+      {/* <label>Email</label> */}
       <div className="relative">
         <input
           type="email"
-          placeholder="Email Address"
+          placeholder="Email"
           className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          defaultValue="example@gmail.com"
           {...register("email")}
+          defaultValue=""
           required
         />
       </div>
-      <label>Password</label>
+
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Username"
+          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          defaultValue=""
+          {...register("username")}
+          required
+        />
+      </div>
+      {/* <label>Password</label> */}
       <div className="relative">
         <input
           type="password"
@@ -91,26 +102,24 @@ const SignUpForm = (props: Props) => {
           required
         />
       </div>
-      <label>Confirm Password</label>
-      <div className="relative">
+      {/* <label>Confirm Password</label> */}
+      {/* <div className="relative">
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Confirm Password"
           className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          defaultValue="123456"
+          defaultValue=""
           {...register("rePassword")}
           required
         />
-      </div>
-      <br/>
+      </div> */}
       <button
         type="submit"
         className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
         {isSubmitting ? "Please wait ..." : "Confirm"}
       </button>
-      <br/>
       <button className="w-full text-grey px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
-            <Link href={'/auth/signin'}>Login</Link>
+            <Link href={'/auth/signin'}>Already have an Account</Link>
       </button>
     </form>
   );

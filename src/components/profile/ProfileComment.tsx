@@ -1,14 +1,11 @@
 import { API_COMMENT_ADD } from "@/utils/api-links";
 import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 
 const PostComment = ({ postId, comments, onCommentAdded }) => {
   const { data: session } = useSession();
   const [newComment, setNewComment] = useState("");
-  useEffect(() => {
-    setNewComment("");
-  }, []);
 
   const handleCommentSubmit = async () => {
     try {
@@ -40,29 +37,31 @@ const PostComment = ({ postId, comments, onCommentAdded }) => {
     }
   };
 
+  const matchItems = comments.filter((obj) => obj.status === 1);
+
   return (
     <div className="mt-4">
       <h4 className="font-semibold mb-2">Comments:</h4>
-      {comments?.map((comment) => (
-        <div key={comment.commentId} className="bg-gray-100 p-2 rounded mb-2">
+      {matchItems.map((comment) => (
+        <div key={comment.CommentId} className="bg-gray-100 p-2 rounded mb-2">
           <div>
             <button
                   className="flex items-center focus:outline-none">
                   <img
                     src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=40&h=40&q=80"
                     alt="User Avatar"
-                    className="w-8 h-8 rounded-full"
+                    className="w-10 h-10 rounded-full"
                   />
-                  <h6 className="px-2">{comment.account.fullName === '' ? 'Commenter' : comment.account.fullName}</h6> 
+                  <h6>{comment.account.fullName === '' ? 'Commenter' : comment.account.fullName}</h6> 
             </button>
           </div>
-        <p className="ml-10">{comment.content}</p>
-        {/* <p className="text-xs text-gray-500">
+        <p>{comment.Content}</p>
+        <p className="text-xs text-gray-500">
           Commented on: {new Date(comment.CreatedOn).toLocaleString()}
-        </p> */}
+        </p>
         </div>
       ))}
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <input
           type="text"
           value={newComment}
@@ -74,9 +73,9 @@ const PostComment = ({ postId, comments, onCommentAdded }) => {
           onClick={handleCommentSubmit}
           className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          Comment
+          Submit Comment
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

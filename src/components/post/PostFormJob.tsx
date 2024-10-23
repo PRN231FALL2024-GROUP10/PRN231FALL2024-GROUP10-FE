@@ -12,6 +12,7 @@ interface Props {
 const PostSchema = z.object({
   content: z.string().min(1, "Content is required"),
   link: z.any().optional(),
+  categoryId: z.number().default(1)
 });
 
 type PostFormData = z.infer<typeof PostSchema>;

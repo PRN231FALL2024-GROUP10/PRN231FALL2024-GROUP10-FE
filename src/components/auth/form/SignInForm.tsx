@@ -44,7 +44,7 @@ const SignInForm = (props: Props) => {
       return;
     }
     console.log(props.callbackUrl);
-    toast.success("Welcome to JobNetwork");
+    toast.success("Welcome to WSocial");
     router.push(props.callbackUrl ? props.callbackUrl : "/");
   };
 
@@ -54,10 +54,10 @@ const SignInForm = (props: Props) => {
         <FaEnvelope className="absolute left-3 top-3 text-gray-400" />
         <input
           type="email"
-          placeholder="Email Address"
+          placeholder="Email"
           className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          defaultValue="example@gmail.com"
           {...register("email")}
+          defaultValue=""
           required
         />
       </div>
