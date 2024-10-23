@@ -1,19 +1,20 @@
 import ProfileLayout from "@/components/Layouts/ProfileLayout";
 import ProfileInfo from "@/components/profile/ProfileInfo";
+import ProfilePost from "@/components/profile/ProfilePost";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Profile"
+  title: "Profile Posts"
 }
 
-const ProfilePage = () => {
+const ProfilePagePost = () => {
   return (
     <ProfileLayout>
-      <ProfileInfo>
+      <ProfilePost>
 
-      </ProfileInfo>
+      </ProfilePost>
     </ProfileLayout>
   );
 };
 
-export default ProfilePage;
+export default ProfilePagePost;
