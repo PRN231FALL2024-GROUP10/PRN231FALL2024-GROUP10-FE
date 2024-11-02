@@ -1,28 +1,48 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { API_ACCOUNT_LOAD, API_POST_LOAD } from "@/utils/api-links";
+import { getSession, useSession } from "next-auth/react";
+import { FollowButton } from "../common/FollowButton";
 
 interface Props {
   key?: string;
 }
 
 const AccountList = ({ key }: Props) => {
+  const { data: session } = useSession();
   const [accs, setAccs] = useState([]);
 
   useEffect(() => {
-    fetchPosts();
+    const fetchData = async () => {
+      const Session = await getSession();
+
+      fetchAccs(Session?.data.accessToken);
+    };
+
+    fetchData();
   }, [key]);
 
-  const fetchPosts = async () => {
+  const fetchAccs = async (token) => {
     try {
       const response = await fetch(
         API_ACCOUNT_LOAD //+ `?$filter=contains(fullNameSearch, '${key}')`
-      );
+      , {
+        headers: {
+          "Content-Type":
+            "application/json;odata.metadata=minimal;odata.streaming=true",
+          Authorization: `Bearer ${token}`,
+        }
+      });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setAccs(data.result);
+      const matchItems = data.filter(
+        (obj: any) => obj.isFollowed === false
+      );
+      await setAccs(matchItems);
+
+      console.log(accs);
     } catch (error) {
       console.error("Error fetching accounts:", error);
     }
@@ -32,14 +52,14 @@ const AccountList = ({ key }: Props) => {
     <section className="w-full mb-8">
       <h1 className="justify-self-center text-2xl font-semibold mb-4 mt-2">People you might know</h1>
       <div className="space-y-4">
-        {accs.map((obj) => (
+        {accs?.map((obj) => (
           <div
             key={obj.accountId}
             className="bg-white p-6 rounded-lg shadow-md"
           >
             <div>
               <img
-                src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&h=200&q=80"
+                src={obj.image? obj.image : "https://firebasestorage.googleapis.com/v0/b/bmos-image-prn.appspot.com/o/User%2F3c9fab92-7598-4125-869d-803d07dffe88?alt=media&token=ddd0a573-2db3-4329-acec-4bee2734bab1"}
                 alt="User Profile"
                 className="w-24 h-24 rounded-full mx-auto mb-4"
               />
@@ -49,12 +69,7 @@ const AccountList = ({ key }: Props) => {
               <p className="text-gray-600 text-center mb-4">
                 {obj.username === "" ? "username" : obj.username}
               </p>
-              <button
-                // onClick={() => router.push("/profile")}
-                className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-              >
-                Follow
-              </button>
+              <FollowButton conditionChanged={fetchAccs} condition={obj.isFollowed} accessToken={session?.data.accessToken} accountId={obj.accountId}></FollowButton>
             </div>
           </div>
         ))}
