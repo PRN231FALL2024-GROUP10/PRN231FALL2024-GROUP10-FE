@@ -17,7 +17,7 @@ export default function PostCreateLayout({
                 aria-pressed="true"
                 className="w-full btn focus-outline inline-flex cursor-pointer select-none flex-row items-center border no-underline shadow-none transition duration-200 ease-in-out typo-callout justify-center font-bold h-10 px-5 rounded-12 btn-tertiary"
               >
-                General
+                Create General Post
               </Link>
               <div className="bottom-0 w-4 absolute inset-x-0 bottom-0 h-0.5 my-0 mx-auto bg-text-primary utilities_activeTabIndicator__cVDB_"></div>
             </div>
@@ -27,7 +27,7 @@ export default function PostCreateLayout({
                 aria-pressed="false"
                 className="w-full btn focus-outline inline-flex cursor-pointer select-none flex-row items-center border no-underline shadow-none transition duration-200 ease-in-out typo-callout justify-center font-bold h-10 px-5 rounded-12 btn-tertiary"
               >
-                Job
+                Create Job Post
               </Link>
             </div>
           </div>

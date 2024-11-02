@@ -45,11 +45,11 @@ const PostDetailPage = ({ key } : Props) => {
               <FaComment className="mr-2" /> {posts.Comments?.length}
             </button>
           </div>
-          <PostComment
+          {/* <PostComment accessToken={}
             postId={posts.PostID}
             comments={posts.Comments}
             onCommentAdded={fetchPosts}
-          />
+          /> */}
         </div>
 
         <div>

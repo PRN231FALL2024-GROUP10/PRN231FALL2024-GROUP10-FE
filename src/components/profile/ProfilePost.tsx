@@ -5,6 +5,7 @@ import { API_POST_DELETE, API_POST_LOAD } from "@/utils/api-links";
 import { useSession } from "next-auth/react";
 import { FaTrashCan } from "react-icons/fa6";
 import GroupPostButton from "../common/GroupPostButton";
+import { PostItemChunk } from "../common/PostItemChunk";
 
 interface Props {
   key?: string;
@@ -39,29 +40,16 @@ const ProfilePost = ({ key }: Props) => {
     <section className="mb-8 space-y-4">
       {posts.map((post) => (
         <div key={post.postID} className="bg-white p-6 rounded-lg shadow-md">
-          {/* <button className="flex items-center focus:outline-none">
-            <img
-              src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=40&h=40&q=80"
-              alt="User Avatar"
-              className="w-10 h-10 rounded-full"
-            />
-            <br />
-            <h6 className="px-2">
-              {post.account.fullName === ""
-                ? "Commenter"
-                : post.account.fullName}
-            </h6>
-          </button> */}
-
           <div className="ml-12">
             <p className="text-sm text-gray-500 mb-2">
-              posted at {new Date(post.createdOn).toLocaleString()}
+              {post.category} post created at {new Date(post.createdOn).toLocaleString()}
             </p>
             <p className="text-gray-700 mb-4">{post.content}</p>
-            
+            <div className="ml-12">
+            <p>Skill tags: </p> <PostItemChunk listItem={post.skill}></PostItemChunk>
           </div>
-          <GroupPostButton commentCount={post.comments?.length} likeCount={post.comments?.length} postId={post.postID} accessToken={session?.data.accessToken}>
-
+          </div>
+          <GroupPostButton  jobTitle={post.jobTitle} postType={post.category} accountId={session?.user.accountId} commentCount={post.comments?.length} likeCount={post.comments?.length} postId={post.postID} accessToken={session?.data.accessToken}>
           </GroupPostButton>
         </div>
       ))}

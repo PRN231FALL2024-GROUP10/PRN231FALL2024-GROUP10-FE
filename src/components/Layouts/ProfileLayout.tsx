@@ -4,8 +4,10 @@ import ProfilePortrait from "../profile/ProfilePortrait";
 
 export default function ProfileLayout({
   children,
+  accountId
 }: {
   children: React.ReactNode;
+  accountId: string
 }) {
   return (
     <>
@@ -18,7 +20,7 @@ export default function ProfileLayout({
           <div className="top-0 z-3 -mt-px flex justify-around bg-white tablet:top-0 tablet:justify-start laptop:top-14 NavBar_nav__btnaf">
             <div className="w-1/6">
               <Link
-                href="/profile"
+                href={`/profile/${accountId}`}
                 aria-pressed="true"
                 className="w-full btn focus-outline inline-flex cursor-pointer select-none flex-row items-center border no-underline shadow-none transition duration-200 ease-in-out typo-callout justify-center font-bold h-10 px-5 rounded-12 btn-tertiary"
               >
@@ -28,7 +30,7 @@ export default function ProfileLayout({
             </div>
             <div className="w-1/6">
               <Link
-                href="/profile/post"
+                href={`/profile/${accountId}/posts`}
                 aria-pressed="false"
                 className="w-full btn focus-outline inline-flex cursor-pointer select-none flex-row items-center border no-underline shadow-none transition duration-200 ease-in-out typo-callout justify-center font-bold h-10 px-5 rounded-12 btn-tertiary"
               >
@@ -37,7 +39,7 @@ export default function ProfileLayout({
             </div>
             <div className="w-1/6">
               <Link
-                href="/profile/comment"
+                href={`/profile/${accountId}/comment`}
                 aria-pressed="false"
                 className="w-full btn focus-outline inline-flex cursor-pointer select-none flex-row items-center border no-underline shadow-none transition duration-200 ease-in-out typo-callout justify-center font-bold h-10 px-5 rounded-12 btn-tertiary"
               >
@@ -46,7 +48,7 @@ export default function ProfileLayout({
             </div>
             <div className="w-1/6">
               <Link
-                href="/profile/like"
+                href={`/profile/${accountId}/like`}
                 aria-pressed="false"
                 className="w-full btn focus-outline inline-flex cursor-pointer select-none flex-row items-center border no-underline shadow-none transition duration-200 ease-in-out typo-callout justify-center font-bold h-10 px-5 rounded-12 btn-tertiary"
               >
@@ -55,7 +57,7 @@ export default function ProfileLayout({
             </div>
             <div className="w-1/6">
               <Link
-                href="/profile/connection"
+                href={`/profile/${accountId}/connection`}
                 aria-pressed="false"
                 className="w-full btn focus-outline inline-flex cursor-pointer select-none flex-row items-center border no-underline shadow-none transition duration-200 ease-in-out typo-callout justify-center font-bold h-10 px-5 rounded-12 btn-tertiary"
               >
@@ -64,7 +66,7 @@ export default function ProfileLayout({
             </div>
             <div className="w-1/6">
               <Link
-                href="/profile/group"
+                href={`/profile/${accountId}/group`}
                 aria-pressed="false"
                 className="w-full btn focus-outline inline-flex cursor-pointer select-none flex-row items-center border no-underline shadow-none transition duration-200 ease-in-out typo-callout justify-center font-bold h-10 px-5 rounded-12 btn-tertiary"
               >

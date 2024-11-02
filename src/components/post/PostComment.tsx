@@ -1,65 +1,65 @@
 import { API_COMMENT_ADD } from "@/utils/api-links";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
+import { Comment } from "../common/Comment";
 
 
-const PostComment = ({ postId, comments, onCommentAdded }) => {
-  const { data: session } = useSession();
+const PostComment = ({ postId, comments, onCommentAdded, accessToken, hostId }) => {
+  
   const [newComment, setNewComment] = useState("");
   useEffect(() => {
     setNewComment("");
   }, []);
 
   const handleCommentSubmit = async () => {
-    try {
-      const response = await fetch(
-        API_COMMENT_ADD,
-        {
+    if(newComment === "")
+    {
+
+    }
+    else 
+    {
+      try {
+        const response = await fetch(API_COMMENT_ADD, {
           method: "POST",
           headers: {
             "Content-Type":
               "application/json;odata.metadata=minimal;odata.streaming=true",
-            Authorization: `Bearer ${session?.data.accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
             content: newComment,
             postId: postId,
             status: 1,
           }),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to submit comment");
         }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to submit comment");
+  
+        setNewComment("");
+        onCommentAdded();
+      } catch (error) {
+        console.error("Error submitting comment:", error);
       }
-
-      setNewComment("");
-      onCommentAdded();
-    } catch (error) {
-      console.error("Error submitting comment:", error);
     }
+    
   };
 
   return (
     <div className="mt-4">
       <h4 className="font-semibold mb-2">Comments:</h4>
-      {comments?.map((comment) => (
+      {comments?.map((comment: any) => (
         <div key={comment.commentId} className="bg-gray-100 p-2 rounded mb-2">
-          <div>
-            <button
-                  className="flex items-center focus:outline-none">
-                  <img
-                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=40&h=40&q=80"
-                    alt="User Avatar"
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <h6 className="px-2">{comment.account.fullName === '' ? 'Commenter' : comment.account.fullName}</h6> 
-            </button>
-          </div>
-        <p className="ml-10">{comment.content}</p>
-        {/* <p className="text-xs text-gray-500">
-          Commented on: {new Date(comment.CreatedOn).toLocaleString()}
-        </p> */}
+          <Comment
+            commentId={comment.commentId}
+            uCommentId={comment.account.accountId}
+            accessToken={accessToken}
+            content={comment.content}
+            image={comment.account.image}
+            fullName={comment.account.fullName}
+            hostId={hostId}
+          ></Comment>
         </div>
       ))}
       <div className="mt-4">

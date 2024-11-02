@@ -3,7 +3,7 @@ import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import Header from "@/components/Header";
 import { authOptions } from "@/libs/authOptions";
 import { getServerSession } from "next-auth";
-import { signOut, useSession } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -47,16 +47,22 @@ const ProfileInfo = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   useEffect(() => {
-    fetchProfile();
-  }, [session]);
+    const fetchData = async () => {
+      const Session = await getSession();
 
-  const fetchProfile = async () => {
+      fetchProfile(Session?.data.accessToken);
+    };
+
+    fetchData();
+  }, []);
+
+  const fetchProfile = async (token) => {
     setIsLoading(true);
     try {
       console.log(session)
       const response = await fetch("https://localhost:44324/api/Profile/me", {
         headers: {
-          Authorization: `Bearer ${session?.data.accessToken}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await response.json();

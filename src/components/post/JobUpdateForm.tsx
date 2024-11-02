@@ -3,28 +3,30 @@ import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import {
   API_POST_ADD,
   API_POST_LOAD,
   API_POST_UPDATE,
   API_POST_UPDATE_PHOTO,
 } from "@/utils/api-links";
+import { FaLessThanEqual } from "react-icons/fa6";
 import PostPrivacyRadio from "../common/PostPrivacyRadio";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface Props {}
 
-const PostSchema = z.object({
+const JobSchema = z.object({
   content: z.string().min(1, "Content is required"),
   link: z.any().optional(),
-  skill: z.string().optional(),
+  skill: z.string().min(1, "Skill is required"),
+  jobtTitle: z.string().min(1, "Job title is required"),
 });
 
-type PostFormData = z.infer<typeof PostSchema>;
+type JobFormData = z.infer<typeof JobSchema>;
 
-const PostUpdateForm = ({ postId }) => {
+const JobUpdateForm = ({ postId }) => {
   const router = useRouter();
   const { data: session } = useSession();
   const {
@@ -32,9 +34,10 @@ const PostUpdateForm = ({ postId }) => {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<PostFormData>({
-    resolver: zodResolver(PostSchema),
+  } = useForm<JobFormData>({
+    resolver: zodResolver(JobSchema),
   });
+
   const [posts, setPosts] = useState();
   
 
@@ -91,25 +94,22 @@ const PostUpdateForm = ({ postId }) => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
+      console.log(data);
       await setPosts(data);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
   };
 
-
-  const processForm: SubmitHandler<PostFormData> = async (data) => {
+  const processForm: SubmitHandler<JobFormData> = async (data) => {
     const formData = new FormData();
     
-    // formData.append("Content", data.content);
-    // const hasPhoto = !!data.link;
-    // formData.append("HasPhoto", hasPhoto.toString());
     if (images) {
       formData.append("Link", images[0]);
     }
 
+
     try {
-      console.log(JSON.stringify(images));
       const response = await fetch(API_POST_UPDATE + `${postId}/UpdatePost`, {
         method: "PUT",
         headers: {
@@ -122,9 +122,12 @@ const PostUpdateForm = ({ postId }) => {
           privateLevel: choiceType,
           skills: data.skill,
           hasPhoto: images? true:false,
+          jobTitle: data.jobtTitle
         }),
       });
 
+      
+        
       if (response.ok) {
         if (images) {
           const responsePhoto = await fetch(API_POST_UPDATE_PHOTO + `${postId}/UpdatePost/photo`, {
@@ -153,31 +156,44 @@ const PostUpdateForm = ({ postId }) => {
 
   return (
     <form onSubmit={handleSubmit(processForm)} className="space-y-4">
-      <PostPrivacyRadio 
+      <PostPrivacyRadio
         actionFunc={(v) => setChoiceType(v)}
         radChecks={typeChecks}
       ></PostPrivacyRadio>
+
       <div>
         <textarea
-        defaultValue={posts?.content}
           {...register("content")}
-          placeholder="What's on your mind?"
           className="w-full p-2 border rounded"
           rows={12}
+          defaultValue={posts?.content}
         />
         {errors.content && (
           <p className="text-red-500">{errors.content.message}</p>
         )}
       </div>
-
       <div>
-        <select
-        defaultValue={posts?.skill[0]}
+        <input defaultValue={posts?.jobTitle} className="border-2" {...register("jobtTitle")} type="text" list="jobs" placeholder="Job title"/>
+        <datalist id="jobs">
+          {/* {caches.map((item, key) => (
+            <option key={key} value={item.displayValue} />
+          ))} */}
+          <option value="Developer">Developer</option>
+          <option value="Writer">Writer</option>
+          <option value="Techlead">Techlead</option>
+        </datalist>
+        {errors.jobtTitle && (
+          <p className="text-red-500">{errors.jobtTitle.message}</p>
+        )}
+      </div>
+      <div>
+        <select className="border-2"
           {...register("skill")}
           value={skill}
           onChange={(e) => {
             setSkill(e.target.value);
           }}
+          defaultValue={posts?.skill[0]}
         >
           <option value="Data Analysis">Data Analysis</option>
           <option value="Technical Writing">Technical Writing</option>
@@ -191,7 +207,6 @@ const PostUpdateForm = ({ postId }) => {
         </select>
         {errors.skill && <p className="text-red-500">{errors.skill.message}</p>}
       </div>
-     
       <div>
         <input
           type="file"
@@ -216,4 +231,4 @@ const PostUpdateForm = ({ postId }) => {
   );
 };
 
-export default PostUpdateForm;
+export default JobUpdateForm;

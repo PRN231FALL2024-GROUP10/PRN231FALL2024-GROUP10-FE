@@ -12,67 +12,59 @@ import { signOut, useSession } from "next-auth/react";
 import { API_PROFILE } from "@/utils/api-links";
 import PostPopup from "../post/PostPopup";
 
-function HeaderItem({ showDropdown, toggleDropdown, profile, toggleCreatePost, showPostModal }) {
-  if (profile?.user !== null) {
+function HeaderItem({
+  showDropdown,
+  toggleDropdown,
+  profile
+}) {
+  if (profile !== null) {
     return (
       <>
-      <div className="flex flex-row">
-      <button
-          onClick={toggleCreatePost}
-          className="flex flex-wrap bg-blue-500 text-white px-4 rounded-lg hover:bg-blue-600 transition duration-300 mr-10 content-center">
-          <FaPlus className="mr-2 mt-1" />
-          New Post
-        </button>
-        {showPostModal && (
-          <div className="absolute post-modal">
-            <PostPopup key={''} onPostCreated={toggleCreatePost}>
-            </PostPopup>
-          </div>
-          
-        )}
-        {/* <Link
-          href="/profile"
-          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-        >
-          New Post
-        </Link> */}
-        <button
-          onClick={toggleDropdown}
-          className="flex items-center focus:outline-none space-x-4"
-        >
-          <span className="hidden text-right lg:block">
-            <span className="block text-lg font-medium text-black dark:text-black">
-              {profile?.user.fullName ? profile?.user.fullName : "User"}
+        <div className="flex flex-row">
+          <Link
+            href="/post/create"
+            className="flex flex-wrap bg-blue-500 text-white px-4 rounded-lg hover:bg-blue-600 transition duration-300 mr-10 content-center"
+          >
+            <FaPlus className="mr-2 mt-1" /> New Post
+          </Link>
+
+          <button
+            onClick={toggleDropdown}
+            className="flex items-center focus:outline-none space-x-4"
+          >
+            <span className="hidden text-right lg:block">
+              <span className="block text-lg font-medium text-black dark:text-black">
+                {profile?.user.fullName ? profile?.user.fullName : "User"}
+              </span>
+              <span className="block text-sm">
+                {profile?.user.username ? profile?.user.username : "User"}
+              </span>
             </span>
-            <span className="block text-sm">
-              {profile?.user.username ? profile?.user.username : "User"}
-            </span>
-          </span>
-          <img
-            src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=40&h=40&q=80"
-            alt="User Avatar"
-            className="w-10 h-10 rounded-full"
-          />
-        </button>
-        {showDropdown && (
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-            <Link
-              href="/profile"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            >
-              <FaUser className="inline-block mr-2" />
-              My profile
-            </Link>
-            <button
-              onClick={() => signOut()}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            >
-              <FaSignOutAlt className="inline-block mr-2" />
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
+            <img
+              src={profile?.user.image ? profile?.user.image : "https://firebasestorage.googleapis.com/v0/b/bmos-image-prn.appspot.com/o/User%2F3c9fab92-7598-4125-869d-803d07dffe88?alt=media&token=ddd0a573-2db3-4329-acec-4bee2734bab1"}
+              alt="User Avatar"
+              className="w-10 h-10 rounded-full"
+            />
+          </button>
+          {showDropdown && (
+            <div className="absolute right-0 mt-14 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+              <Link
+                href={`/profile/${profile?.user.accountId}`}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <FaUser className="inline-block mr-2" />
+                My profile
+              </Link>
+              <button
+                onClick={() => signOut()}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <FaSignOutAlt className="inline-block mr-2" />
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </>
     );
   } else {
@@ -90,24 +82,16 @@ function HeaderItem({ showDropdown, toggleDropdown, profile, toggleCreatePost, s
 }
 
 const Header = () => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showPostModal, setShowPostModal] = useState(false);
   const { data: session } = useSession();
+  const [showDropdown, setShowDropdown] = useState(false);
   // useEffect(() => {
   //   fetchProfile();
   // }, [session]);
-  useEffect(() => {
-    setShowDropdown(false);
-    setShowPostModal(false);
-  }, []);
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
 
-  const toggleCreatePost = () => {
-    setShowPostModal(true);
-  };
   // const fetchProfile = async () => {
   //   setIsLoading(true);
   //   try {
@@ -147,9 +131,7 @@ const Header = () => {
             <li className="relative">
               <HeaderItem
                 showDropdown={showDropdown}
-                showPostModal={showPostModal}
                 toggleDropdown={toggleDropdown}
-                toggleCreatePost={toggleCreatePost}
                 profile={session}
               ></HeaderItem>
             </li>
