@@ -1,7 +1,6 @@
 "use client";
-
+import { API_ACCOUNT_ADMIN_LOAD, API_ACCOUNT_BAN, API_ACCOUNT_LOAD, API_ACCOUNT_UNBAN } from "@/utils/api-links";
 import { useEffect, useState } from "react";
-
 interface Account {
   accountId: number;
   email: string;
@@ -9,26 +8,21 @@ interface Account {
   username: string | null;
   role: number;
 }
-
 interface ApiResponse {
   result: Account[];
 }
-
 export default function AccountPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
-
   useEffect(() => {
     fetchAccounts();
   }, []);
-
   const fetchAccounts = async () => {
-    const response = await fetch("https://localhost:7207/Accounts");
-    const data: ApiResponse = await response.json();
-    setAccounts(data.result);
+    const response = await fetch(API_ACCOUNT_ADMIN_LOAD);
+    const data = await response.json();
+    await setAccounts(data.result);
   };
-
   const handleBanAccount = async (accountId: number) => {
-    await fetch(`https://localhost:7207/Account/BanAccount/${accountId}`, {
+    await fetch(API_ACCOUNT_BAN + `${accountId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,9 +30,8 @@ export default function AccountPage() {
     });
     fetchAccounts();
   };
-
   const handleUnbanAccount = async (accountId: number) => {
-    await fetch(`https://localhost:7207/Account/UnlockAccount/${accountId}`, {
+    await fetch(API_ACCOUNT_UNBAN + `${accountId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -46,7 +39,6 @@ export default function AccountPage() {
     });
     fetchAccounts();
   };
-
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Account Management</h1>
