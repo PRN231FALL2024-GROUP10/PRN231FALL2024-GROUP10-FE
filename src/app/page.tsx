@@ -2,6 +2,7 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import PostHome from "@/components/Layouts/PostHomeLayout";
 import PostHomeLayout from "@/components/Layouts/PostHomeLayout";
 import PostList from "@/components/post/PostList";
+import { useSession } from "next-auth/react";
 
 const Home = () => {
   // const router = useRouter();
@@ -17,15 +18,13 @@ const Home = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <DefaultLayout>
-        <PostHomeLayout>
+    <>
+      <PostHomeLayout>
           <PostList key={''}>
 
           </PostList>
         </PostHomeLayout>
-      </DefaultLayout>
-    </div>
+    </>
   );
 };
 

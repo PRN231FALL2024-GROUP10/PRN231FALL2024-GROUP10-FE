@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const PostCreate = () => {
   return (
     <PostCreateLayout>
-      <PostForm onPostCreated={''}>
+      <PostForm>
       </PostForm>
     </PostCreateLayout>
   );

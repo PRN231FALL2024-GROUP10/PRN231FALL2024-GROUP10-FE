@@ -2,7 +2,7 @@
 import PostHomeLayout from "@/components/Layouts/PostHomeLayout";
 import PostList from "@/components/post/PostList";
 
-const JobPage = () => {
+const PostPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 ">
       <PostHomeLayout>
@@ -13,4 +13,4 @@ const JobPage = () => {
   );
 };
 
-export default JobPage;
+export default PostPage;

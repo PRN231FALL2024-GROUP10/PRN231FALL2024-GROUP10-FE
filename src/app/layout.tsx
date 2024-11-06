@@ -42,8 +42,8 @@ export default async function RootLayout({
   // const l3 = await cpRes.json();
   // const tuRes = await fetch(API_TIMEU_LOAD);
   // const l4 = await tuRes.json();
-  // const ptRes = await fetch(API_POST_TYPE_LOAD);
-  // const l5 = await ptRes.json();
+  // // const ptRes = await fetch(API_POST_TYPE_LOAD);
+  // // const l5 = await ptRes.json();
   // const skRes = await fetch(API_SKILL_LOAD);
   // const l6 = await skRes.json();
 
