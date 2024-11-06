@@ -1,5 +1,5 @@
 import { API_FOLLOW } from "@/utils/api-links";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaConnectdevelop } from "react-icons/fa";
 
 export const FollowButton = ({
@@ -13,8 +13,14 @@ export const FollowButton = ({
   accessToken: any;
   conditionChanged?: () => void;
 }) => {
-  const [conditionRT, setCondition] = useState(condition);
+  const [conditionRT, setCondition] = useState(false);
+  useEffect(() => {
+    // console.log('follow ne');
+    // console.log(condition);
+    setCondition(condition);
+  }, [condition]);
   const follow = async () => {
+    
     try {
       const response = await fetch(API_FOLLOW + `${accountId}/follow`, {
         method: "POST",

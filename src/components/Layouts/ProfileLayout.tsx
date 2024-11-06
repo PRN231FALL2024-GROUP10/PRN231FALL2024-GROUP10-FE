@@ -13,12 +13,12 @@ export default function ProfileLayout({
     <>
       <div className="flex justify-center bg-gray-200 gap-4">
         <div className="mt-10 w-1/4">
-            <ProfilePortrait></ProfilePortrait>
+            <ProfilePortrait profileId={accountId}></ProfilePortrait>
         </div>
         
         <section className="w-2/3 bg-white min-h-screen">
           <div className="top-0 z-3 -mt-px flex justify-around bg-white tablet:top-0 tablet:justify-start laptop:top-14 NavBar_nav__btnaf">
-            <div className="w-1/6">
+            <div className="w-1/5">
               <Link
                 href={`/profile/${accountId}`}
                 aria-pressed="true"
@@ -28,7 +28,7 @@ export default function ProfileLayout({
               </Link>
               <div className="bottom-0 w-4 absolute inset-x-0 bottom-0 h-0.5 my-0 mx-auto bg-text-primary utilities_activeTabIndicator__cVDB_"></div>
             </div>
-            <div className="w-1/6">
+            <div className="w-1/5">
               <Link
                 href={`/profile/${accountId}/posts`}
                 aria-pressed="false"
@@ -37,7 +37,7 @@ export default function ProfileLayout({
                 Posts
               </Link>
             </div>
-            <div className="w-1/6">
+            {/* <div className="w-1/6">
               <Link
                 href={`/profile/${accountId}/comment`}
                 aria-pressed="false"
@@ -45,8 +45,8 @@ export default function ProfileLayout({
               >
                 Comments
               </Link>
-            </div>
-            <div className="w-1/6">
+            </div> */}
+            <div className="w-1/5">
               <Link
                 href={`/profile/${accountId}/like`}
                 aria-pressed="false"
@@ -55,7 +55,7 @@ export default function ProfileLayout({
                 Likes
               </Link>
             </div>
-            <div className="w-1/6">
+            <div className="w-1/5">
               <Link
                 href={`/profile/${accountId}/connection`}
                 aria-pressed="false"
@@ -64,7 +64,7 @@ export default function ProfileLayout({
                 Connections
               </Link>
             </div>
-            <div className="w-1/6">
+            <div className="w-1/5">
               <Link
                 href={`/profile/${accountId}/group`}
                 aria-pressed="false"

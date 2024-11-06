@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Comment } from "../common/Comment";
 
 
-const PostComment = ({ postId, comments, onCommentAdded, accessToken, hostId }) => {
+const AdminPostComment = ({ postId, comments, onCommentAdded, accessToken, hostId }) => {
   
   const [newComment, setNewComment] = useState("");
   useEffect(() => {
@@ -63,23 +63,8 @@ const PostComment = ({ postId, comments, onCommentAdded, accessToken, hostId }) 
           ></Comment>
         </div>
       ))}
-      <div className="mt-4">
-        <input
-          type="text"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-          className="w-full p-2 border rounded"
-        />
-        <button
-          onClick={handleCommentSubmit}
-          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Comment
-        </button>
-      </div>
     </div>
   );
 };
 
-export default PostComment;
+export default AdminPostComment;

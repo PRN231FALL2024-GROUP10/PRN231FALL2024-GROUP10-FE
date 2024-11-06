@@ -3,14 +3,12 @@ import React, { useRef, useEffect } from "react";
 interface Props {
   children: React.ReactNode;
   exceptionRef?: React.RefObject<HTMLElement>;
-  onClick: () => void;
   className?: string;
 }
 
 const ClickOutside: React.FC<Props> = ({
   children,
   exceptionRef,
-  onClick,
   className,
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -31,7 +29,6 @@ const ClickOutside: React.FC<Props> = ({
           wrapperRef.current.contains(event.target as Node);
       }
 
-      if (!clickedInside) onClick();
     };
 
     document.addEventListener("mousedown", handleClickListener);
@@ -39,7 +36,7 @@ const ClickOutside: React.FC<Props> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickListener);
     };
-  }, [exceptionRef, onClick]);
+  }, []);
 
   return (
     <div ref={wrapperRef} className={`${className || ""}`}>

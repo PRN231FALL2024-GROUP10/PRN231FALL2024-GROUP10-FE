@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { FaComment, FaHeart } from "react-icons/fa";
-import { API_CHANGE_AVATAR, API_POST_LOAD, API_PROFILE } from "@/utils/api-links";
+import { API_CHANGE_AVATAR, API_POST_LOAD, API_PROFILE, API_PROFILE_VISITOR } from "@/utils/api-links";
 import { getSession, useSession } from "next-auth/react";
+import { FollowButton } from "../common/FollowButton";
 
 
-const ProfilePortrait = () => {
+const ProfilePortrait = ({profileId}) => {
   const [user, setUser] = useState(null);
   const { data: session } = useSession();
   useEffect(() => {
@@ -65,6 +66,8 @@ const ProfilePortrait = () => {
 
     const fetchUser = async (token) => {
       try {
+        if(session?.user.accountId == profileId)
+          {
         const response = await fetch(API_PROFILE,
           {
             headers: {
@@ -78,13 +81,31 @@ const ProfilePortrait = () => {
         const data = await response.json();
         
         await setUser(data.account);
+      } else
+      {
+        const response = await fetch(API_PROFILE_VISITOR + `${profileId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        console.log(data);
+        await setUser(data.account);
+      }
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
     };
 
   return (
-    <aside className="w-full mt-8">
+    profileId == session?.user.accountId?
+    (
+      <aside className="w-full mt-8">
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
         <img
           src={user?.image}
@@ -122,6 +143,35 @@ const ProfilePortrait = () => {
         <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
       </div>
     </aside>
+    )
+    :
+    (
+<aside className="w-full mt-8">
+      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+        <img
+          src={user?.image}
+          alt="User Profile"
+          className="w-24 h-24 rounded-full mx-auto mb-4"
+        />
+        <h3 className="text-xl font-semibold text-center mb-2">
+          {user?.fullName}
+        </h3>
+        <p className="text-gray-600 text-center mb-12">
+          {user?.username}
+        </p>
+        <FollowButton conditionChanged={() => fetchUser(session?.data.accessToken)} condition={user?.isFollowed} accessToken={session?.data.accessToken} accountId={user?.accountId}></FollowButton>
+      </div>
+      
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <ul className="space-y-2 text-gray-700">
+          <li>{user?.followerCount} Follower</li>
+          <li>{user?.followingCount} Following</li>
+        </ul>
+        <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
+      </div>
+    </aside>
+    )
+    
   );
 };
 

@@ -1,17 +1,14 @@
 "use client";
 
 import { FaComment, FaHeart } from "react-icons/fa";
-import { API_POST_LOAD } from "@/utils/api-links";
+import { API_POST_LOAD, API_PROFILE_LIKE } from "@/utils/api-links";
 import { useEffect, useState } from "react";
 import { getSession, useSession } from "next-auth/react";
 import { LikePostButton } from "../common/PostLikeButton";
 import { PostItemChunk } from "../common/PostItemChunk";
 
-interface Props {
-  key?: string;
-}
 
-const ProfileLikes = ({ key }: Props) => {
+const ProfileLikes = ({profileId}) => {
   const { data: session } = useSession();
   const [posts, setPosts] = useState([]);
 
@@ -27,22 +24,41 @@ const ProfileLikes = ({ key }: Props) => {
 
   const fetchPosts = async (token: any) => {
     try {
-      const response = await fetch(API_POST_LOAD, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        cache: "no-cache",
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+      if(session?.user.accountId == profileId)
+      {
+        const response = await fetch(API_POST_LOAD, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-cache",
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        const reversedPosts = data.reverse();
+        const matchItems = reversedPosts.filter(
+          (obj: any) => obj.isLiked === true
+        );
+        setPosts(matchItems);
+        console.log(matchItems);
       }
-      const data = await response.json();
-      const reversedPosts = data.reverse();
-      const matchItems = reversedPosts.filter(
-        (obj: any) => obj.isLiked === true
-      );
-      setPosts(matchItems);
-      console.log(matchItems);
+      else
+      {
+        const response = await fetch(API_PROFILE_LIKE + `${profileId}/like`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-cache",
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        const reversedPosts = data.reverse();
+        setPosts(reversedPosts);
+      }
+      
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -90,6 +106,7 @@ const ProfileLikes = ({ key }: Props) => {
             </div>
 
             <LikePostButton
+            conditionChanged={() => fetchPosts(session?.data.accessToken)}
               accessToken={session?.data.accessToken}
               condition={post.isLiked}
               postId={post.postID}
@@ -132,6 +149,7 @@ const ProfileLikes = ({ key }: Props) => {
             </div>
 
             <LikePostButton
+            conditionChanged={() => fetchPosts(session?.data.accessToken)}
               accessToken={session?.data.accessToken}
               condition={post.isLiked}
               postId={post.postID}

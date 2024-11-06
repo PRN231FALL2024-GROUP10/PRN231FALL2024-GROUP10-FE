@@ -9,7 +9,7 @@ import { LikePostButton } from "../common/PostLikeButton";
 import Image from "next/image";
 import Link from "next/link";
 
-const PostList = () => {
+export const PostListSearch = ({search}) => {
   const [posts, setPosts] = useState([]);
   const { data: session } = useSession();
   useEffect(() => {
@@ -37,7 +37,8 @@ const PostList = () => {
       const matchItems = await data.filter(
         (obj: any) => obj.category === "General" && obj.privacyLevel === 1
       ).reverse();
-      await setPosts(matchItems);
+      const filtered = await matchItems.filter((post : any) => post.account.email.includes(search))
+      await setPosts(filtered);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -179,4 +180,3 @@ const PostList = () => {
   );
 };
 
-export default PostList;

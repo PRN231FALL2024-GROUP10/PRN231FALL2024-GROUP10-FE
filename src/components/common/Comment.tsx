@@ -1,41 +1,8 @@
 import { API_COMMENT_DELETE } from "@/utils/api-links";
+import Link from "next/link";
 import { FaTrashCan } from "react-icons/fa6";
+import { DeleteCommentButton } from "./CommentButton";
 
-const DeleteCommentButton = ({ condition, commentId, accessToken }) => {
-  const deleteCmt = async () => {
-    try {
-      const response = await fetch(API_COMMENT_DELETE, {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json;odata.metadata=minimal;odata.streaming=true",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          commentId: commentId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete");
-      }
-    } catch (error) {
-      console.error("Error delete:", error);
-    }
-  };
-
-  return condition ? (
-    <button
-      key={commentId}
-      onClick={deleteCmt}
-      className="flex items-center text-gray-600 hover:text-blue-600"
-    >
-      <FaTrashCan className="mr-2" /> Delete
-    </button>
-  ) : (
-    <></>
-  );
-};
 
 export const Comment = ({
   commentId,
@@ -45,18 +12,28 @@ export const Comment = ({
   hostId,
   uCommentId,
   accessToken,
+  commentDeleted
 }) => {
   return (
     <div key={commentId} className="bg-gray-100 p-2 rounded mb-2">
-      <div>
+      <Link
+            href={`/profile/${uCommentId}`}
+          >
+            <div className="flex items-center focus:outline-none">
+            <img src={image} alt="User Avatar" className="w-8 h-8 rounded-full" />
+          <h6 className="px-2">{fullName === "" ? "Commenter" : fullName}</h6>
+            </div>
+          </Link>
+      {/* <div>
         <button className="flex items-center focus:outline-none">
           <img src={image} alt="User Avatar" className="w-8 h-8 rounded-full" />
           <h6 className="px-2">{fullName === "" ? "Commenter" : fullName}</h6>
         </button>
-      </div>
+      </div> */}
       <p className="ml-10">{content}</p>
 
       <DeleteCommentButton
+      commentDeleted={commentDeleted}
         condition={hostId === uCommentId}
         accessToken={accessToken}
         commentId={commentId}

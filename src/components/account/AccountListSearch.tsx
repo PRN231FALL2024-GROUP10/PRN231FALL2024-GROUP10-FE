@@ -5,11 +5,8 @@ import { getSession, useSession } from "next-auth/react";
 import { FollowButton } from "../common/FollowButton";
 import Link from "next/link";
 
-interface Props {
-  key?: string;
-}
 
-const AccountList = ({ key }: Props) => {
+export const AccountListSearch = ({ search }) => {
   const { data: session } = useSession();
   const [accs, setAccs] = useState([]);
 
@@ -42,7 +39,9 @@ const AccountList = ({ key }: Props) => {
       const matchItems = data.filter(
         (obj: any) => obj.isFollowed === false && obj.accountId !== hostId
       );
-      await setAccs(matchItems);
+      
+      const filtered = await matchItems.filter((acc : any) => acc.email.includes(search))
+      await setAccs(filtered);
 
       // console.log(hostId);
       // console.log(matchItems);
@@ -53,7 +52,6 @@ const AccountList = ({ key }: Props) => {
 
   return (
     <section className="w-full mb-8">
-      <h1 className="justify-self-center text-2xl font-semibold mb-4 mt-2">People you might know</h1>
       <div className="space-y-4">
         {accs?.map((obj) => (
           <div
@@ -83,5 +81,3 @@ const AccountList = ({ key }: Props) => {
     </section>
   );
 };
-
-export default AccountList;

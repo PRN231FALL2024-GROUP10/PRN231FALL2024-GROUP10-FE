@@ -4,7 +4,12 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import { API_POST_ADD, API_POST_ADD_PHOTO } from "@/utils/api-links";
+import {
+  API_JOB_TITLE_LOAD,
+  API_POST_ADD,
+  API_POST_ADD_PHOTO,
+  API_SKILL_LOAD,
+} from "@/utils/api-links";
 import Link from "next/link";
 import PostPrivacyRadio from "../common/PostPrivacyRadio";
 import { useRouter } from "next/navigation";
@@ -35,13 +40,10 @@ const PostFormJob = () => {
   const [images, setImages] = useState([]);
   const uploadImage = () => {
     const file = event.target.files;
-    // const formData = new FormData();
-    // formData.append('image', file);
 
     console.log(file);
     setImages(file);
   };
-
 
   const processForm: SubmitHandler<PostFormData> = async (data) => {
     const formData = new FormData();
@@ -66,8 +68,8 @@ const PostFormJob = () => {
           privateLevel: choiceType,
           skills: data.skill,
           categoryID: 1,
-          hasPhoto: images? true:false,
-          jobTitle: data.jobtTitle
+          hasPhoto: images ? true : false,
+          jobTitle: data.jobtTitle,
         }),
       });
 
@@ -75,13 +77,16 @@ const PostFormJob = () => {
         console.log("Post created successfully");
         const resData = await response.json();
 
-        const responsePhoto = await fetch(API_POST_ADD_PHOTO + `${resData.data.postID}/photo`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session?.data.accessToken}`,
-          },
-          body: formData,
-        });
+        const responsePhoto = await fetch(
+          API_POST_ADD_PHOTO + `${resData.data.postID}/photo`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${session?.data.accessToken}`,
+            },
+            body: formData,
+          }
+        );
       } else {
         console.error("Failed to create post");
       }
@@ -92,7 +97,21 @@ const PostFormJob = () => {
 
     router.push("/job");
   };
+  const [listSkill, setlistSkill] = useState([]);
+  const [listJob, setlistJob] = useState([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const jtRes = await fetch(API_JOB_TITLE_LOAD);
+      const l1 = await jtRes.json();
+      const skRes = await fetch(API_SKILL_LOAD);
+      const l6 = await skRes.json();
+      await setlistSkill(l6.result);
+      await setlistJob(l1.result);
+    };
+
+    fetchData();
+  }, []);
   const [choiceType, setChoiceType] = useState(1);
   const [typeChecks, setTypeChecks] = useState([true, false]);
 
@@ -130,21 +149,26 @@ const PostFormJob = () => {
         )}
       </div>
       <div>
-        <input className="border-2" {...register("jobtTitle")} type="text" list="jobs" placeholder="Job title"/>
+        <input
+          className="border-2"
+          {...register("jobtTitle")}
+          type="text"
+          list="jobs"
+          placeholder="Job title"
+        />
         <datalist id="jobs">
-          {/* {caches.map((item, key) => (
-            <option key={key} value={item.displayValue} />
-          ))} */}
-          <option value="Developer">Developer</option>
+        {listJob?.map((a) => <option key={a.id} value={a.name}>{a.name}</option>)}
+          {/* <option value="Developer">Developer</option>
           <option value="Writer">Writer</option>
-          <option value="Techlead">Techlead</option>
+          <option value="Techlead">Techlead</option> */}
         </datalist>
         {errors.jobtTitle && (
           <p className="text-red-500">{errors.jobtTitle.message}</p>
         )}
       </div>
       <div>
-        <select className="border-2"
+        <select
+          className="border-2"
           {...register("skill")}
           value={skill}
           onChange={(e) => {
@@ -160,6 +184,7 @@ const PostFormJob = () => {
           <option value="HR">HR</option>
           <option value="Finnance">Finnance</option>
           <option value="Machine Learning">Machine Learning</option>
+          {/* {listSkill?.map((a) => <option key={a.id} value={a.name}>{a.name}</option>)} */}
         </select>
         {errors.skill && <p className="text-red-500">{errors.skill.message}</p>}
       </div>

@@ -7,6 +7,7 @@ import { getSession, useSession } from "next-auth/react";
 import { PostItemChunk } from "../common/PostItemChunk";
 import { LikePostButton } from "../common/PostLikeButton";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Props {
   key?: string;
@@ -37,12 +38,10 @@ const PostListJob = ({ key }: Props) => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      const reversedPosts = data.reverse();
-      const matchItems = reversedPosts.filter(
-        (obj: any) => obj.category === "Job"
-      );
-      setPosts(matchItems);
-      console.log(matchItems);
+      const matchItems = await data.filter(
+        (obj: any) => obj.category === "Job" && obj.privacyLevel === 1
+      ).reverse();
+      await setPosts(matchItems);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -52,8 +51,11 @@ const PostListJob = ({ key }: Props) => {
     <section className="mb-8 space-y-4">
       {posts.map((post) => (post.photo?
       (<div key={post.postID} className="bg-white p-6 rounded-lg shadow-md">
-        <button className="flex items-center focus:outline-none">
-          <img
+        <Link
+            href={`/profile/${post.account.accountId}`}
+          >
+            <div className="flex items-center focus:outline-none">
+            <img
             src={post.account.image}
             alt="User Avatar"
             className="w-10 h-10 rounded-full"
@@ -64,7 +66,8 @@ const PostListJob = ({ key }: Props) => {
               ? "Commenter"
               : post.account.fullName}
           </h6>
-        </button>
+            </div>
+          </Link>
 
         <div className="ml-12">
           <p className="text-sm text-gray-500 mb-2">
@@ -95,7 +98,7 @@ const PostListJob = ({ key }: Props) => {
 
         <LikePostButton
           likeCount={post.likeCount}
-          conditionChanged={fetchPosts}
+          conditionChanged={() => fetchPosts(session?.data.accessToken)}
           accessToken={session?.data.accessToken}
           condition={post.isLiked}
           postId={post.postID}
@@ -106,22 +109,26 @@ const PostListJob = ({ key }: Props) => {
           hostId={session?.user.accountId}
           postId={post.postID}
           comments={post.comments}
-          onCommentAdded={fetchPosts}
+          onCommentAdded={() => fetchPosts(session?.data.accessToken)}
         />
       </div>):(<div key={post.postID} className="bg-white p-6 rounded-lg shadow-md">
-          <button className="flex items-center focus:outline-none">
+        <Link
+            href={`/profile/${post.account.accountId}`}
+          >
+            <div className="flex items-center focus:outline-none">
             <img
-              src={post.account.image}
-              alt="User Avatar"
-              className="w-10 h-10 rounded-full"
-            />
-            <br />
-            <h6 className="px-2">
-              {post.account.fullName === ""
-                ? "Commenter"
-                : post.account.fullName}
-            </h6>
-          </button>
+            src={post.account.image}
+            alt="User Avatar"
+            className="w-10 h-10 rounded-full"
+          />
+          <br />
+          <h6 className="px-2">
+            {post.account.fullName === ""
+              ? "Commenter"
+              : post.account.fullName}
+          </h6>
+            </div>
+          </Link>
 
           <div className="ml-12">
             <p className="text-sm text-gray-500 mb-2">
@@ -151,7 +158,7 @@ const PostListJob = ({ key }: Props) => {
 
           <LikePostButton
             likeCount={post.likeCount}
-            conditionChanged={fetchPosts}
+            conditionChanged={() => fetchPosts(session?.data.accessToken)}
             accessToken={session?.data.accessToken}
             condition={post.isLiked}
             postId={post.postID}
@@ -162,10 +169,10 @@ const PostListJob = ({ key }: Props) => {
             hostId={session?.user.accountId}
             postId={post.postID}
             comments={post.comments}
-            onCommentAdded={fetchPosts}
+            onCommentAdded={() => fetchPosts(session?.data.accessToken)}
           />
         </div>)
-        
+
       ))}
     </section>
   );

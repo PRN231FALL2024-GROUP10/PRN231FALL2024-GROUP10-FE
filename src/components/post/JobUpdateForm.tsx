@@ -5,10 +5,12 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getSession, useSession } from "next-auth/react";
 import {
+  API_JOB_TITLE_LOAD,
   API_POST_ADD,
   API_POST_LOAD,
   API_POST_UPDATE,
   API_POST_UPDATE_PHOTO,
+  API_SKILL_LOAD,
 } from "@/utils/api-links";
 import { FaLessThanEqual } from "react-icons/fa6";
 import PostPrivacyRadio from "../common/PostPrivacyRadio";
@@ -40,6 +42,21 @@ const JobUpdateForm = ({ postId }) => {
 
   const [posts, setPosts] = useState();
   
+  const [listSkill, setlistSkill] = useState([]);
+  const [listJob, setlistJob] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const jtRes = await fetch(API_JOB_TITLE_LOAD);
+      const l1 = await jtRes.json();
+      const skRes = await fetch(API_SKILL_LOAD);
+      const l6 = await skRes.json();
+      await setlistSkill(l6.result);
+      await setlistJob(l1.result);
+    };
+
+    fetchData();
+  }, []);
 
   const [choiceType, setChoiceType] = useState(1);
   const [typeChecks, setTypeChecks] = useState([true, false]);
@@ -150,7 +167,6 @@ const JobUpdateForm = ({ postId }) => {
       console.error("Error:", error);
     }
 
-
     router.push(`/profile/${session?.user.accountId}/posts`);
   };
 
@@ -175,12 +191,10 @@ const JobUpdateForm = ({ postId }) => {
       <div>
         <input defaultValue={posts?.jobTitle} className="border-2" {...register("jobtTitle")} type="text" list="jobs" placeholder="Job title"/>
         <datalist id="jobs">
-          {/* {caches.map((item, key) => (
-            <option key={key} value={item.displayValue} />
-          ))} */}
-          <option value="Developer">Developer</option>
+          {listJob?.map((a) => <option key={a.id}  value={a.name}>{a.name}</option>)}
+          {/* <option value="Developer">Developer</option>
           <option value="Writer">Writer</option>
-          <option value="Techlead">Techlead</option>
+          <option value="Techlead">Techlead</option> */}
         </datalist>
         {errors.jobtTitle && (
           <p className="text-red-500">{errors.jobtTitle.message}</p>
@@ -195,6 +209,7 @@ const JobUpdateForm = ({ postId }) => {
           }}
           defaultValue={posts?.skill[0]}
         >
+          {/* {listSkill?.map((a) => <option key={a.id}  value={a.name}>{a.name}</option>)} */}
           <option value="Data Analysis">Data Analysis</option>
           <option value="Technical Writing">Technical Writing</option>
           <option value="Cloud Computing">Cloud Computing</option>

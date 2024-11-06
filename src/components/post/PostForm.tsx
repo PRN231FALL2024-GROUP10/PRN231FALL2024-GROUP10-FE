@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import { API_POST_ADD, API_POST_ADD_PHOTO } from "@/utils/api-links";
+import { API_POST_ADD, API_POST_ADD_PHOTO, API_SKILL_LOAD } from "@/utils/api-links";
 import Link from "next/link";
 import PostPrivacyRadio from "../common/PostPrivacyRadio";
 import { useRouter } from "next/navigation";
@@ -98,7 +98,19 @@ const PostForm = () => {
 
   const [choiceType, setChoiceType] = useState(1);
   const [typeChecks, setTypeChecks] = useState([true, false]);
+  const [listSkill, setlistSkill] = useState([]);
 
+  useEffect(() => {
+    
+    const fetchSkill = async () => {
+      const skRes = await fetch(API_SKILL_LOAD);
+      const l6 = await skRes.json();
+      await setlistSkill(l6.result);
+    };
+
+    fetchSkill();
+  }, []);
+  
   useEffect(() => {
     switch (choiceType) {
       case 1:
@@ -140,6 +152,7 @@ const PostForm = () => {
             setSkill(e.target.value);
           }}
         >
+          {/* {listSkill?.map((a) => <option value={a.name}>{a.name}</option>)} */}
           <option value="Data Analysis">Data Analysis</option>
           <option value="Technical Writing">Technical Writing</option>
           <option value="Cloud Computing">Cloud Computing</option>

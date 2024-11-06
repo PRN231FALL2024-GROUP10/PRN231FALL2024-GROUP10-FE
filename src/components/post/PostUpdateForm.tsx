@@ -9,6 +9,7 @@ import {
   API_POST_LOAD,
   API_POST_UPDATE,
   API_POST_UPDATE_PHOTO,
+  API_SKILL_LOAD,
 } from "@/utils/api-links";
 import PostPrivacyRadio from "../common/PostPrivacyRadio";
 import { useRouter } from "next/navigation";
@@ -83,7 +84,18 @@ const PostUpdateForm = ({ postId }) => {
     console.log(file);
     setImages(file);
   };
+  const [listSkill, setlistSkill] = useState([]);
 
+  useEffect(() => {
+    
+    const fetchData = async () => {
+      const skRes = await fetch(API_SKILL_LOAD);
+      const l6 = await skRes.json();
+      setlistSkill(l6.result);
+    };
+
+    fetchData();
+  }, []);
   const fetchPosts = async () => {
     try {
       const response = await fetch(API_POST_LOAD + `/${postId}`);
@@ -171,14 +183,14 @@ const PostUpdateForm = ({ postId }) => {
       </div>
 
       <div>
-        <select
-        defaultValue={posts?.skill[0]}
+        <select defaultValue={posts?.skill[0]}
           {...register("skill")}
           value={skill}
           onChange={(e) => {
             setSkill(e.target.value);
           }}
         >
+          {/* {listSkill?.map((a) => <option value={a.name}>{a.name}</option>)} */}
           <option value="Data Analysis">Data Analysis</option>
           <option value="Technical Writing">Technical Writing</option>
           <option value="Cloud Computing">Cloud Computing</option>

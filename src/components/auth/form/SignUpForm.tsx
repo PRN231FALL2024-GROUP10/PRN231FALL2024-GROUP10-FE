@@ -50,21 +50,21 @@ const SignUpForm = (props: Props) => {
     }
 
 
-    const login = await signIn("credentials", {
-      redirect: false,
-      email: data.email,
-      password: data.password,
-    });
+    // const login = await signIn("credentials", {
+    //   redirect: false,
+    //   email: data.email,
+    //   password: data.password,
+    // });
 
-    if (!login?.ok) {
-      toast.error("Invalid field(s)", {
-        theme: "dark",
-      });
-      return;
-    }
+    // if (!login?.ok) {
+    //   toast.error("Invalid field(s)", {
+    //     theme: "dark",
+    //   });
+    //   return;
+    // }
 
     toast.success("Welcome to WSocial");
-    router.push(props.callbackUrl ? props.callbackUrl : "/");
+    router.push("/auth/verify");
   };
   
   return (

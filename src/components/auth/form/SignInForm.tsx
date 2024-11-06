@@ -2,12 +2,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
+import { getSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import Link from 'next/link';
+import Link from "next/link";
 import { FormSignInSchema } from "@/libs/schema/auth";
 import { toast } from "react-toastify";
 import SignInWithGoogle from "../SignInWithGoogle";
@@ -42,10 +42,23 @@ const SignInForm = (props: Props) => {
         theme: "dark",
       });
       return;
+    } else {
+      const session = await getSession();
+
+      if (session?.user.role === 1) {
+        toast.success("Welcome to WSocial");
+        router.push(props.callbackUrl ? props.callbackUrl : "/");
+      }else if (session?.user.role === 2) {
+        toast.success("Welcome Admin");
+        router.push("/admin/account");
+      } else {
+        toast.warning("Invalid Account", {
+          autoClose: 5000,
+          onClose: () => signOut()
+          });
+        
+      }
     }
-    console.log(props.callbackUrl);
-    toast.success("Welcome to WSocial");
-    router.push(props.callbackUrl ? props.callbackUrl : "/");
   };
 
   return (
@@ -78,9 +91,9 @@ const SignInForm = (props: Props) => {
       >
         {isSubmitting ? "Please wait ..." : "Login"}
       </button>
-      <br/>
+      <br />
       <button className="w-full text-grey px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
-            <Link href={'/auth/signup'}>Create New Account</Link>
+        <Link href={"/auth/signup"}>Create New Account</Link>
       </button>
     </form>
   );

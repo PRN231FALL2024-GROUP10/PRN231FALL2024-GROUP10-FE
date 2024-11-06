@@ -34,34 +34,34 @@ const GroupPostButton = ({
   postId,
   commentCount,
   likeCount,
-  accessToken,
   accountId,
+  hostId,
   postType,
-  jobTitle
+  jobTitle,
+  postDeleted
 }) => {
   const deletePost = async () => {
     try {
-      const response = await fetch(API_POST_DELETE, {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json;odata.metadata=minimal;odata.streaming=true",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          postId: postId,
-        }),
-      });
-
+      const response = await fetch(API_POST_DELETE + `${postId}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (!response.ok) {
-        throw new Error("Failed to delete");
+        throw new Error("Network response was not ok");
       }
+      else {
+        postDeleted();
+      }
+
+
     } catch (error) {
-      console.error("Error delete:", error);
+      console.error("Error fetching posts:", error);
     }
   };
 
-  return (
+
+  return hostId == accountId? (
     <>
       <div className="flex space-x-4 mb-4">
         <button className="flex items-center text-gray-600 hover:text-blue-600">
@@ -87,6 +87,20 @@ const GroupPostButton = ({
       >
         <FaTrashCan className="mr-2" /> Delete
       </button>
+    </>
+  )
+  :
+  (
+    <>
+      <div className="flex space-x-4 mb-4">
+        <button className="flex items-center text-gray-600 hover:text-blue-600">
+          {" "}
+          <FaHeart className="mr-2" /> {commentCount}
+        </button>
+        <button className="flex items-center text-gray-600 hover:text-blue-600">
+          <FaComment className="mr-2" /> {likeCount}
+        </button>
+      </div>
     </>
   );
 };
