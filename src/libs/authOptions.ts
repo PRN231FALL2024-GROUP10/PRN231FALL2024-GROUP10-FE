@@ -48,9 +48,21 @@ export const authOptions: NextAuthOptions = {
             console.error("Error:", res.status, res.statusText);
             return null;
           }
+          // else {
+          //   const user = await res.json();
+          //   if (user.role === 2) {
+          //     return user;
+          //   }
 
+          //   if (user.role === 1) {
+          //     return user;
+          //   }
+          //   else {
+          //     console.log("ko co quyen truy cap");
+          //     return null;
+          //   }
+          // }
           const user = await res.json();
-
           return user;
         } catch (error) {
           console.error("Fetch error:", error);
